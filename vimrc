@@ -128,7 +128,7 @@ set modeline
 set modelines=10
 
 " Default color scheme
-color desert
+color railscasts
 
 " Directories for swp files
 set backupdir=~/.vim/backup
@@ -155,3 +155,28 @@ endif
 if filereadable(expand("~/.vimrc.local"))
   source ~/.vimrc.local
 endif
+
+if has("autocmd")
+  " Enable filetype detection
+  filetype plugin indent on
+
+  " Restore cursor position
+  autocmd BufReadPost *
+    \ if line("'\"") > 1 && line("'\"") <= line("$") |
+    \   exe "normal! g`\"" |
+    \ endif
+endif
+
+if &t_Co > 2 || has("gui_running")
+  " Enable syntax highlighting
+  syntax on
+endif
+
+autocmd User fugitive
+  \ if fugitive#buffer().type() =~# '^\%(tree\|blob\)$' |
+  \   nnoremap <buffer> .. :edit %:h<CR> |
+  \ endif
+
+autocmd BufReadPost fugitive://* set bufhidden=delete
+
+set statusline=%<%f\ %h%m%r%{fugitive#statusline()}%=%-14.(%l,%c%V%)\ %P
